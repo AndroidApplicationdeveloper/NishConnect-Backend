@@ -1,0 +1,25 @@
+{
+    "name": "nishconnect",
+    "version": "1.0.0",
+    "description": "Chat app backend",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "nodemon server.js"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.7",
+        "engine.io": "^3.5.0",
+        "engine.io-parser": "^2.2.1",
+        "express": "^4.21.2",
+        "firebase-admin": "^11.5.0",
+        "mongoose": "^7.8.6",
+        "nodemailer": "^6.10.0",
+        "socket.io": "^4.7.2",
+        "socket.io-client": "^2.3.0"
+    },
+    "devDependencies": {
+        "nodemon": "^3.0.2"
+    }
+}

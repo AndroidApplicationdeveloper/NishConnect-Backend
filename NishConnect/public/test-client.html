@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Socket.IO Chat Test</title>
+  <script src="/socket.io.js"></script>
+
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #status { margin: 10px 0; font-weight: bold; }
+    #messageInput, #sendBtn { display: none; }
+  </style>
+</head>
+<body>
+  <h2>Simple Chat</h2>
+
+  <input id="usernameInput" placeholder="Enter Your Name" />
+  <br><br>
+
+  <input id="roomInput" placeholder="Enter Room ID" />
+  <button onclick="joinRoom()">Join Room</button>
+  <div id="status">🟡 Waiting to join...</div>
+
+  <br /><br />
+
+  <input id="messageInput" placeholder="Type your message..." />
+  <button id="sendBtn" onclick="sendMessage()">Send</button>
+
+  <ul id="messages"></ul>
+
+  <script>
+    let socket;
+    let joined = false;
+    let username = "";
+
+    function joinRoom() {
+      const room = document.getElementById("roomInput").value.trim();
+      username = document.getElementById("usernameInput").value.trim();
+
+      if (!room || !username) {
+        alert("Please enter both room and name");
+        return;
+      }
+
+      document.getElementById("status").innerText = "🔄 Connecting to server...";
+
+      socket = io("http://localhost:5000");
+
+      socket.on("connect", () => {
+        console.log("✅ Connected:", socket.id);
+        document.getElementById("status").innerText = `🟢 Connected (ID: ${socket.id})`;
+
+        socket.emit("joinRoom", room);
+        document.getElementById("status").innerText += ` | ✅ Joined room: ${room}`;
+        document.getElementById("messageInput").style.display = "inline-block";
+        document.getElementById("sendBtn").style.display = "inline-block";
+        joined = true;
+      });
+
+      socket.on("disconnect", () => {
+        document.getElementById("status").innerText = `🔴 Disconnected from server`;
+      });
+
+      socket.on("chatMessage", (msg) => {
+        const li = document.createElement("li");
+        li.innerText = `${msg.username}: ${msg.text}`;
+        document.getElementById("messages").appendChild(li);
+      });
+    }
+
+    function sendMessage() {
+      const room = document.getElementById("roomInput").value.trim();
+      const text = document.getElementById("messageInput").value.trim();
+      if (!joined || !text) return;
+
+      const msgObj = {
+        username: username, // 👈 use user input
+        text: text,
+        room: room
+      };
+
+      socket.emit("chatMessage", msgObj);
+      document.getElementById("messageInput").value = "";
+    }
+  </script>
+</body>
+</html>
